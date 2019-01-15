@@ -15,9 +15,7 @@ def setup_dataframe(file):
 
     df.index = pd.DatetimeIndex(df['Day_Name'])
 
-    df = df.reindex(idx)
-
-
+    df = df.reindex(idx,fill_value=0.0)
 
     df['Date'] = df.index
     df = df.reset_index(drop=True)
@@ -26,23 +24,28 @@ def setup_dataframe(file):
     df['WeekNum'] = df['Day_Name'].dt.week
     df['YearNum'] = df['Day_Name'].dt.year
 
-    #df['Difference'] = df['DayNum'].shift(-1) - df['DayNum']
 
-    #df['rank'] = df.groupby(['YearNum','WeekNum'])['DayNum'].rank()
-#df = df.drop(columns=['Date','Day_Name'])
+    return df
 
+def drop_head(df):
+    df = df[df.WeekNum != df.WeekNum.iloc[0]]
+    return df
 
-#-for column in df:
-#    if df[column].dtype == 'float64':
-#        print(1)
-#        df[column] = df[column]/df[column].max()
+def rank_days(df):
 
-#df.loc[0] = [np.random.randint(-1,1) for n in range(len(df.columns))]
+    df['major_index'] = (df.index -2) % 7
+    df['rank'] = df.groupby(['YearNum'])['Date'].rank()
+    df = df[df.major_index != 6]
+    df = df[df.major_index != 0]
 
-    print(df.head(25))
-
-    print(df.dtypes,len(df.columns))
+    return df
 
 file = 'FB.csv'
 
-setup_dataframe(file)
+df = setup_dataframe(file)
+df = drop_head(df)
+df = rank_days(df)
+
+print(df.head(50))
+
+print(df.dtypes,len(df.columns))
