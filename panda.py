@@ -2,6 +2,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+def fill_non_trading(dataframe):
+    print(1)
+    
+
+
 
 
 
@@ -20,6 +25,8 @@ df['YearNum'] = df['Day_Name'].dt.year
 #    if df[column].dtype == 'float64':
 #        print(1)
 #        df[column] = df[column]/df[column].max()
+
+df.loc[0] = [np.random.randint(-1,1) for n in range(len(df.columns))]
 
 print(df.head(25))
 
